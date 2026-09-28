@@ -1,15 +1,17 @@
-import { TRANSLATIONS } from "./data/translations.js";
 import { PROTOCOLS_DATA } from "./data/protocols.js";
+// Carga del motor i18n centralizado en Kora Web SDK
+import { KoraI18n, KORA_LANGUAGES } from "https://cdn.jsdelivr.net/gh/KoraDevsOrg/kora-web-sdk@main/kora-i18n.js";
 
 class EmergencyApp {
   constructor() {
-    this.currentLang = localStorage.getItem("kora_salud_lang") || "es";
+    this.i18n = new KoraI18n("kora_salud_lang", "es");
     this.currentProtocolId = "heimlich";
     this.audioCtx = null;
     this.metroInterval = null;
     this.isMetroRunning = false;
 
     this.cacheDom();
+    this.populateLanguageOptions();
     this.bindEvents();
     this.initKoraSync();
     this.render();
@@ -30,15 +32,24 @@ class EmergencyApp {
     this.drawerTitle = document.getElementById("drawerTitle");
   }
 
+  populateLanguageOptions() {
+    this.langSelect.innerHTML = "";
+    Object.values(KORA_LANGUAGES).forEach((lang) => {
+      const opt = document.createElement("option");
+      opt.value = lang.code;
+      opt.textContent = lang.name;
+      this.langSelect.appendChild(opt);
+    });
+    this.langSelect.value = this.i18n.getLang();
+  }
+
   bindEvents() {
     this.btnOpenDrawer.addEventListener("click", () => this.toggleDrawer(true));
     this.btnCloseDrawer.addEventListener("click", () => this.toggleDrawer(false));
     this.drawerBackdrop.addEventListener("click", () => this.toggleDrawer(false));
 
-    this.langSelect.value = this.currentLang;
     this.langSelect.addEventListener("change", (e) => {
-      this.currentLang = e.target.value;
-      localStorage.setItem("kora_salud_lang", this.currentLang);
+      this.i18n.setLang(e.target.value);
       this.render();
     });
   }
@@ -49,20 +60,18 @@ class EmergencyApp {
   }
 
   render() {
-    const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.es;
-    
-    // UI Básica
-    this.appTitle.textContent = t.appTitle;
-    this.offlineBadge.textContent = t.offlineTag;
-    this.footerText.textContent = t.footerText;
-    this.drawerTitle.textContent = t.menuTitle;
+    // 1. Textos estáticos globales desde el SDK
+    this.appTitle.textContent = this.i18n.t("appTitle");
+    this.offlineBadge.textContent = this.i18n.t("offlineTag");
+    this.footerText.textContent = this.i18n.t("footerText");
+    this.drawerTitle.textContent = this.i18n.t("menuTitle");
 
-    // Renderizar Menú Drawer
+    // 2. Lista de Protocolos en el Drawer Lateral
     this.drawerList.innerHTML = "";
     PROTOCOLS_DATA.forEach((prot) => {
       const btn = document.createElement("button");
       btn.className = `drawer-item ${prot.id === this.currentProtocolId ? "active" : ""}`;
-      btn.textContent = prot.titles[this.currentLang] || prot.titles.es;
+      btn.textContent = this.i18n.t(prot.i18nKey);
       btn.addEventListener("click", () => {
         this.currentProtocolId = prot.id;
         this.toggleDrawer(false);
@@ -71,17 +80,17 @@ class EmergencyApp {
       this.drawerList.appendChild(btn);
     });
 
-    // Renderizar Metrónomo solo si estamos en RCP
+    // 3. Metrónomo RCP (exclusivo para protocolo 'rcp')
     if (this.currentProtocolId === "rcp") {
       this.metronomeContainer.style.display = "block";
       this.metronomeContainer.innerHTML = `
         <div class="metronome-box">
           <div id="pulseLight" class="pulse-light"></div>
           <button id="btnMetro" class="metronome-btn">
-            ${this.isMetroRunning ? t.btnStopMetro : t.btnStartMetro}
+            ${this.isMetroRunning ? this.i18n.t("btnStopMetro") : this.i18n.t("btnStartMetro")}
           </button>
           <p style="color: var(--text-sub); font-size: 0.8rem; margin-top: 8px;">
-            ${t.metroInstruction}
+            ${this.i18n.t("metroInstruction")}
           </p>
         </div>
       `;
@@ -91,7 +100,7 @@ class EmergencyApp {
       if (this.isMetroRunning) this.toggleMetronome();
     }
 
-    // Renderizar Pasos y Gráficos del Protocolo Actual
+    // 4. Renderizar tarjetas de pasos y SVGs
     const activeProt = PROTOCOLS_DATA.find((p) => p.id === this.currentProtocolId);
     this.mainContent.innerHTML = "";
 
@@ -101,13 +110,13 @@ class EmergencyApp {
       card.innerHTML = `
         <div class="step-header">
           <div class="step-number">${step.order}</div>
-          <h2 style="font-size: 1.05rem;">${step.title[this.currentLang] || step.title.es}</h2>
+          <h2 style="font-size: 1.05rem;">${this.i18n.getText(step.title)}</h2>
         </div>
         <div class="svg-container">${step.svg}</div>
-        <p style="font-size: 0.95rem; line-height: 1.45;">${step.desc[this.currentLang] || step.desc.es}</p>
+        <p style="font-size: 0.95rem; line-height: 1.45;">${this.i18n.getText(step.desc)}</p>
         ${
           step.alert
-            ? `<div class="danger-box"><strong>${t.alertLabel}</strong>${step.alert[this.currentLang] || step.alert.es}</div>`
+            ? `<div class="danger-box"><strong>${this.i18n.t("alertLabel")}</strong> ${this.i18n.getText(step.alert)}</div>`
             : ""
         }
       `;
@@ -115,20 +124,18 @@ class EmergencyApp {
     });
   }
 
-  // Motor Acústico del Metrónomo (110 BPM)
+  // Motor Acústico y Háptico (110 BPM)
   toggleMetronome() {
-    const t = TRANSLATIONS[this.currentLang] || TRANSLATIONS.es;
     const btn = document.getElementById("btnMetro");
-    
     if (this.isMetroRunning) {
       clearInterval(this.metroInterval);
       this.isMetroRunning = false;
-      if (btn) btn.textContent = t.btnStartMetro;
+      if (btn) btn.textContent = this.i18n.t("btnStartMetro");
     } else {
       this.playTick();
       this.metroInterval = setInterval(() => this.playTick(), 545);
       this.isMetroRunning = true;
-      if (btn) btn.textContent = t.btnStopMetro;
+      if (btn) btn.textContent = this.i18n.t("btnStopMetro");
     }
   }
 
@@ -160,14 +167,14 @@ class EmergencyApp {
     }
   }
 
-  // Integración Kora Admin DB (Persistencia en SQLite)
+  // Persistencia SQLite vía KoraSyncEngine
   async initKoraSync() {
     if (typeof window.KoraSyncEngine !== "undefined") {
       const engine = new window.KoraSyncEngine({
         pkgName: "org.koradevs.salud.primerosauxilios",
         appName: "Kora Primeros Auxilios",
         tableName: "mod_salud_pasos",
-        currentHtmlVersion: "2.0.0",
+        currentHtmlVersion: "3.0.0",
         tableDdl: `
           CREATE TABLE IF NOT EXISTS mod_salud_pasos (
             id TEXT PRIMARY KEY,
@@ -185,7 +192,6 @@ class EmergencyApp {
         }
       });
 
-      // Mapear cada imagen SVG como un registro independiente
       const syncItems = [];
       PROTOCOLS_DATA.forEach((p) => {
         p.steps.forEach((s) => {
