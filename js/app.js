@@ -2,6 +2,8 @@ import { PROTOCOLS_DATA } from "./data/protocols.js";
 // Carga del motor i18n centralizado en Kora Web SDK
 import { KoraI18n, KORA_LANGUAGES } from "https://cdn.jsdelivr.net/gh/KoraDevsOrg/kora-web-sdk@main/kora-i18n.js";
 
+import { EmergencyBeacon } from "./modules/beacon.js";
+
 class EmergencyApp {
   constructor() {
     this.i18n = new KoraI18n("kora_salud_lang", "es");
@@ -211,4 +213,25 @@ class EmergencyApp {
 
 document.addEventListener("DOMContentLoaded", () => {
   new EmergencyApp();
+});
+
+const beacon = new EmergencyBeacon();
+const btnBeacon = document.getElementById("btnBeacon");
+const beaconTitle = document.getElementById("beaconTitle");
+const beaconDesc = document.getElementById("beaconDesc");
+
+btnBeacon.addEventListener("click", () => {
+  beacon.toggleLevel((level, details) => {
+    if (level === 0) {
+      btnBeacon.style.background = "#ef4444";
+      btnBeacon.style.transform = "scale(1)";
+      beaconTitle.textContent = "Baliza Desactivada";
+      beaconDesc.textContent = "Toca para alternar: Eco (Nivel 1) → Medio (Nivel 2) → Rápido (Nivel 3)";
+    } else {
+      btnBeacon.style.background = level === 3 ? "#b91c1c" : (level === 2 ? "#d97706" : "#2563eb");
+      btnBeacon.style.transform = "scale(1.05)";
+      beaconTitle.textContent = details.name;
+      beaconDesc.textContent = `Intervalo: ${details.period} • Batería: ${details.battery}`;
+    }
+  });
 });
