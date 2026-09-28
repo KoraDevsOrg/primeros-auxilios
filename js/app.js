@@ -1,7 +1,5 @@
 import { PROTOCOLS_DATA } from "./data/protocols.js";
-// Carga del motor i18n centralizado en Kora Web SDK
 import { KoraI18n, KORA_LANGUAGES } from "https://cdn.jsdelivr.net/gh/KoraDevsOrg/kora-web-sdk@main/kora-i18n.js";
-
 import { EmergencyBeacon } from "./modules/beacon.js";
 
 class EmergencyApp {
@@ -11,6 +9,9 @@ class EmergencyApp {
     this.audioCtx = null;
     this.metroInterval = null;
     this.isMetroRunning = false;
+
+    // Instancia del módulo de hardware Baliza SOS
+    this.beacon = new EmergencyBeacon();
 
     this.cacheDom();
     this.populateLanguageOptions();
@@ -32,6 +33,11 @@ class EmergencyApp {
     this.offlineBadge = document.getElementById("offlineBadge");
     this.footerText = document.getElementById("footerText");
     this.drawerTitle = document.getElementById("drawerTitle");
+
+    // Elementos de la Baliza SOS
+    this.btnBeacon = document.getElementById("btnBeacon");
+    this.beaconTitle = document.getElementById("beaconTitle");
+    this.beaconDesc = document.getElementById("beaconDesc");
   }
 
   populateLanguageOptions() {
@@ -54,11 +60,34 @@ class EmergencyApp {
       this.i18n.setLang(e.target.value);
       this.render();
     });
+
+    // Evento del Botón de Emergencia / Baliza
+    if (this.btnBeacon) {
+      this.btnBeacon.addEventListener("click", () => this.handleBeaconClick());
+    }
   }
 
   toggleDrawer(open) {
     this.sideDrawer.classList.toggle("open", open);
     this.drawerBackdrop.classList.toggle("active", open);
+  }
+
+  handleBeaconClick() {
+    this.beacon.toggleLevel((level, details) => {
+      if (!this.btnBeacon) return;
+
+      if (level === 0) {
+        this.btnBeacon.style.background = "#ef4444";
+        this.btnBeacon.style.transform = "scale(1)";
+        if (this.beaconTitle) this.beaconTitle.textContent = "Baliza Desactivada";
+        if (this.beaconDesc) this.beaconDesc.textContent = "Toca para alternar: Eco (Nivel 1) → Medio (Nivel 2) → Rápido (Nivel 3)";
+      } else {
+        this.btnBeacon.style.background = level === 3 ? "#b91c1c" : (level === 2 ? "#d97706" : "#2563eb");
+        this.btnBeacon.style.transform = "scale(1.05)";
+        if (this.beaconTitle) this.beaconTitle.textContent = details.name;
+        if (this.beaconDesc) this.beaconDesc.textContent = `Intervalo: ${details.period} • Batería: ${details.battery}`;
+      }
+    });
   }
 
   render() {
@@ -82,7 +111,7 @@ class EmergencyApp {
       this.drawerList.appendChild(btn);
     });
 
-    // 3. Metrónomo RCP (exclusivo para protocolo 'rcp')
+    // 3. Metrónomo RCP (solo en pantalla de RCP)
     if (this.currentProtocolId === "rcp") {
       this.metronomeContainer.style.display = "block";
       this.metronomeContainer.innerHTML = `
@@ -102,7 +131,7 @@ class EmergencyApp {
       if (this.isMetroRunning) this.toggleMetronome();
     }
 
-    // 4. Renderizar tarjetas de pasos y SVGs
+    // 4. Renderizar tarjetas de pasos e imágenes
     const activeProt = PROTOCOLS_DATA.find((p) => p.id === this.currentProtocolId);
     this.mainContent.innerHTML = "";
 
@@ -126,7 +155,7 @@ class EmergencyApp {
     });
   }
 
-  // Motor Acústico y Háptico (110 BPM)
+  // Metrónomo acústico y vibratorio (110 BPM)
   toggleMetronome() {
     const btn = document.getElementById("btnMetro");
     if (this.isMetroRunning) {
@@ -176,7 +205,7 @@ class EmergencyApp {
         pkgName: "org.koradevs.salud.primerosauxilios",
         appName: "Kora Primeros Auxilios",
         tableName: "mod_salud_pasos",
-        currentHtmlVersion: "3.0.0",
+        currentHtmlVersion: "3.1.0",
         tableDdl: `
           CREATE TABLE IF NOT EXISTS mod_salud_pasos (
             id TEXT PRIMARY KEY,
@@ -211,27 +240,7 @@ class EmergencyApp {
   }
 }
 
+// Inicialización limpia tras cargar el DOM
 document.addEventListener("DOMContentLoaded", () => {
   new EmergencyApp();
-});
-
-const beacon = new EmergencyBeacon();
-const btnBeacon = document.getElementById("btnBeacon");
-const beaconTitle = document.getElementById("beaconTitle");
-const beaconDesc = document.getElementById("beaconDesc");
-
-btnBeacon.addEventListener("click", () => {
-  beacon.toggleLevel((level, details) => {
-    if (level === 0) {
-      btnBeacon.style.background = "#ef4444";
-      btnBeacon.style.transform = "scale(1)";
-      beaconTitle.textContent = "Baliza Desactivada";
-      beaconDesc.textContent = "Toca para alternar: Eco (Nivel 1) → Medio (Nivel 2) → Rápido (Nivel 3)";
-    } else {
-      btnBeacon.style.background = level === 3 ? "#b91c1c" : (level === 2 ? "#d97706" : "#2563eb");
-      btnBeacon.style.transform = "scale(1.05)";
-      beaconTitle.textContent = details.name;
-      beaconDesc.textContent = `Intervalo: ${details.period} • Batería: ${details.battery}`;
-    }
-  });
 });
