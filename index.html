@@ -10,11 +10,22 @@
 </head>
 <body>
 
+  <div id="beaconScreenFlash" style="position: fixed; inset: 0; background: #ffffff; opacity: 0; pointer-events: none; transition: opacity 0.05s linear; z-index: 100;"></div>
+  
   <!-- Backdrop accesible del Drawer -->
   <div id="drawerBackdrop" class="drawer-backdrop"></div>
 
   <!-- Menú Hamburguesa Lateral -->
   <aside id="sideDrawer" class="side-drawer">
+    
+    <div style="background: #1e293b; border: 2px solid #ef4444; border-radius: 12px; padding: 16px; margin-bottom: 16px; text-align: center;">
+  <button id="btnBeacon" style="background: #ef4444; color: white; border: none; width: 80px; height: 80px; border-radius: 50%; font-size: 2rem; cursor: pointer; box-shadow: 0 0 20px rgba(239,68,68,0.4);">
+    🚨
+  </button>
+  <h3 id="beaconTitle" style="font-size: 1rem; margin-top: 10px;">Baliza Desactivada</h3>
+  <p id="beaconDesc" style="color: #94a3b8; font-size: 0.8rem; margin-top: 4px;">Toca para alternar: Eco (Nivel 1) → Medio (Nivel 2) → Rápido (Nivel 3)</p>
+</div>
+
     <div class="drawer-header">
       <h2 id="drawerTitle" style="font-size: 1.1rem; font-weight: 800;">Protocolos</h2>
       <button id="btnCloseDrawer" class="btn-hamburger">✕</button>
@@ -50,6 +61,6 @@
   </footer>
 
   <!-- Script modular de la aplicación -->
-  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/app.js" version="1.0.1"></script>
 </body>
 </html>
