@@ -1,12 +1,8 @@
 export const PROTOCOLS_DATA = Object.freeze([
+  // 1. ASFIXIA / HEIMLICH
   {
     id: "heimlich",
-    category: "asfixia",
-    titles: {
-      es: "Atragantamiento (Heimlich)",
-      guc: "Kakulaa (Heimlich)",
-      pbb: "Dxij cxe'ni (Heimlich)"
-    },
+    i18nKey: "catAsfixia",
     steps: [
       {
         order: 1,
@@ -51,7 +47,7 @@ export const PROTOCOLS_DATA = Object.freeze([
           pbb: "Kuse tucxte e'nz pa'ga txa'wte kase'je. Dxij piitstx jxutxte."
         },
         alert: {
-          es: "Si pierde el conocimiento, colócala en el suelo e inicia RCP de inmediato.",
+          es: "Si pierde el conocimiento, colócala en el suelo boca arriba e inicia RCP de inmediato.",
           guc: "Müleka nütüjüle achumajaa, pa'laaja nüi mmoluu.",
           pbb: "Yu'tse' uypxte, ki'te e'nze' tucxte RCP pe'kweya'."
         },
@@ -66,14 +62,11 @@ export const PROTOCOLS_DATA = Object.freeze([
       }
     ]
   },
+
+  // 2. PARO CARDIORRESPIRATORIO / RCP
   {
     id: "rcp",
-    category: "paro",
-    titles: {
-      es: "Paro Cardiorrespiratorio (RCP)",
-      guc: "Aashajuushii (RCP)",
-      pbb: "Yu'tse' Uypx (RCP)"
-    },
+    i18nKey: "catRcp",
     steps: [
       {
         order: 1,
@@ -83,12 +76,12 @@ export const PROTOCOLS_DATA = Object.freeze([
           pbb: "Pkhbuya Kuseyujx"
         },
         desc: {
-          es: "Brazos rectos en 90°. Hunde el pecho 5 a 6 cm en el centro del esternón al ritmo de 100-120 por minuto.",
+          es: "Arrodíllate a su lado con brazos rectos en 90°. Hunde el esternón 5 a 6 cm al ritmo de 100-120 por minuto.",
           guc: "Pa'yataa wopü waneepia. Pahunda 5-6 cm sünain aashajawaa.",
           pbb: "Kuse txuxte pa'the'. Dxij 5-6 cm kuse'sxte jxukte tucxya'."
         },
         alert: {
-          es: "No des respiración boca a boca si no eres personal capacitado. No pares las compresiones.",
+          es: "No des respiración boca a boca si no tienes equipo. No detengas el masaje cardíaco.",
           guc: "Nnojo paashajeerüin nünülia. Nnojo peitajüin.",
           pbb: "Mee yuwe yu'tsene' uypxte. Pkhbuya neyuj pe'kweya'."
         },
@@ -107,31 +100,28 @@ export const PROTOCOLS_DATA = Object.freeze([
       }
     ]
   },
+
+  // 3. HEMORRAGIAS SEVERAS Y TORNIQUETE
   {
     id: "hemorragia",
-    category: "trauma",
-    titles: {
-      es: "Control de Hemorragias",
-      guc: "Ashaa aashajawaa",
-      pbb: "Iskwe Ksa'ji"
-    },
+    i18nKey: "catHemorragias",
     steps: [
       {
         order: 1,
         title: {
-          es: "Presión Directa Continua",
+          es: "Presión Directa Firme",
           guc: "Pa'yataa waneepia ashaa",
           pbb: "Kuseyuj ksa'j"
         },
         desc: {
-          es: "Aplica tela limpia o apósito sobre la herida y presiona con ambas manos sin retirar la tela si se empapa.",
+          es: "Coloca gasa o tela limpia directo en la herida y presiona con ambas manos. Si se empapa, pon otra encima sin retirar la primera.",
           guc: "Paacha karalo'uta anaasü no'upüna ashaaka. Nnojo pülüküin.",
           pbb: "Dxij piitstx sxawthe kse'te iskwe uwe'sxte ksa'jya'."
         },
         alert: {
-          es: "Si la sangre no se detiene en brazos o piernas, aplica un torniquete 5 cm arriba de la herida.",
-          guc: "Müleka nnojorüle eitain ashaa, paapa wane wariira pükotolüin.",
-          pbb: "Iskwe kasejme'te, torniquete ksakwe 5 cm thegte."
+          es: "No limpies coágulos profundos formados en la herida.",
+          guc: "Nnojo pajüttüin ashaa motso'ojuushi.",
+          pbb: "Mee iskwe kuse'te tucxwe'."
         },
         svg: `<svg viewBox="0 0 240 180" fill="none">
           <path d="M30 90 L210 90" stroke="#fde047" stroke-width="32" stroke-linecap="round"/>
@@ -140,6 +130,97 @@ export const PROTOCOLS_DATA = Object.freeze([
           <rect x="100" y="40" width="40" height="22" rx="6" fill="#38bdf8"/>
           <line x1="120" y1="15" x2="120" y2="35" stroke="#ef4444" stroke-width="4"/>
           <polyline points="114,28 120,36 126,28" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+        </svg>`
+      },
+      {
+        order: 2,
+        title: {
+          es: "Aplicación de Torniquete",
+          guc: "Wariira süpüla ashaa",
+          pbb: "Torniquete ksa'ji"
+        },
+        desc: {
+          es: "En hemorragias masivas de brazos o piernas, coloca el torniquete 5 a 7 cm proximal a la herida. Ajusta la varilla hasta que cese el sangrado.",
+          guc: "Paapa wariira pükotolüin 5 cm no'u ashaakai.",
+          pbb: "Torniquete ksakwe 5 cm thegte txux kasejme'."
+        },
+        alert: {
+          es: "Anota la hora exacta en la frente del paciente. Nunca aflojes el torniquete.",
+          guc: "Paashajeerüin ka'ika no'upüna chi wayuukai.",
+          pbb: "Ksxawte hora pta'sya nasa thegte. Mee ksa'me."
+        },
+        svg: `<svg viewBox="0 0 240 180" fill="none">
+          <path d="M20 90 L220 90" stroke="#fde047" stroke-width="30" stroke-linecap="round"/>
+          <circle cx="190" cy="90" r="8" fill="#ef4444"/>
+          <rect x="90" y="68" width="16" height="44" rx="3" fill="#0f172a" stroke="#ef4444" stroke-width="3"/>
+          <line x1="75" y1="50" x2="120" y2="130" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+          <path d="M125 60 A 25 25 0 0 1 145 90" stroke="#ef4444" stroke-width="3" fill="none"/>
+        </svg>`
+      }
+    ]
+  },
+
+  // 4. QUEMADURAS TÉRMICAS
+  {
+    id: "quemaduras",
+    i18nKey: "catQuemaduras",
+    steps: [
+      {
+        order: 1,
+        title: {
+          es: "Enfriamiento con Agua Limpia",
+          guc: "Wüin süpüla kousaa",
+          pbb: "Pi'sx yaacxte"
+        },
+        desc: {
+          es: "Irriga con agua corriente a temperatura ambiente durante 15 a 20 minutos ininterrumpidos.",
+          guc: "Pütaja wüin anaasü no'upüna 20 minutos.",
+          pbb: "Pi'sx yu'te kse'te 20 minutos pa'ga."
+        },
+        alert: {
+          es: "PROHIBIDO: Cero hielo directo, pasta dental, café, aceites o mantequilla.",
+          guc: "NNOJO paapüin jero, pasta dental otta aseite.",
+          pbb: "MEE jxupxte pasta, kape, seytetx ksa'me."
+        },
+        svg: `<svg viewBox="0 0 240 180" fill="none">
+          <path d="M30 140 C80 130 110 120 180 120" stroke="#fde047" stroke-width="26" stroke-linecap="round"/>
+          <ellipse cx="140" cy="115" rx="20" ry="12" fill="#ef4444"/>
+          <path d="M120 20 L140 20 L140 45 L130 45" stroke="#94a3b8" stroke-width="6" stroke-linecap="round"/>
+          <path d="M135 48 L135 110" stroke="#38bdf8" stroke-width="6" stroke-dasharray="6 4"/>
+        </svg>`
+      }
+    ]
+  },
+
+  // 5. MORDEDURAS, PICADURAS Y VENENOS
+  {
+    id: "mordeduras",
+    i18nKey: "catToxicos",
+    steps: [
+      {
+        order: 1,
+        title: {
+          es: "Inmovilización de la Extremidad",
+          guc: "Pansaawaa süpüla wüi",
+          pbb: "Thakwe kse'te thegni"
+        },
+        desc: {
+          es: "Mantén a la víctima quieta. Inmoviliza el miembro con tablilla o férula a nivel o por debajo del corazón.",
+          guc: "Pa'laaja waneepia chi wayuukai, pansaajaa nütüna süka wunu'u.",
+          pbb: "Nasa fxi'zenya ksa'te. Kse'te ki'te ksa'jya' thakwe."
+        },
+        alert: {
+          es: "NUNCA hagas cortes, no succiones el veneno y no apliques torniquetes en mordeduras de serpientes.",
+          guc: "NNOJO püsülajüin, nnojo pajapüchijüin sümaa ponzoña.",
+          pbb: "MEE jxukwe pka'me, yuweyuj thakwe pxikme."
+        },
+        svg: `<svg viewBox="0 0 240 180" fill="none">
+          <path d="M20 90 L220 90" stroke="#fde047" stroke-width="26" stroke-linecap="round"/>
+          <circle cx="160" cy="85" r="3" fill="#ef4444"/>
+          <circle cx="160" cy="95" r="3" fill="#ef4444"/>
+          <rect x="40" y="112" width="160" height="12" rx="3" fill="#78350f" stroke="#451a03" stroke-width="2"/>
+          <rect x="60" y="75" width="12" height="48" rx="2" fill="#e2e8f0"/>
+          <rect x="110" y="75" width="12" height="48" rx="2" fill="#e2e8f0"/>
         </svg>`
       }
     ]
