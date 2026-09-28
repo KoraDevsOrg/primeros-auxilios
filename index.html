@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kora Primeros Auxilios</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --red-alert: #ef4444;
+            --amber-warn: #f59e0b;
+            --green-ok: #10b981;
+            --blue-action: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 16px;
+            background-color: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        header h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .offline-badge {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            background: #1e3a8a;
+            color: #93c5fd;
+            border-radius: 9999px;
+            font-weight: 700;
+        }
+
+        nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            padding: 12px;
+            gap: 8px;
+            background: var(--bg-color);
+        }
+
+        .tab-btn {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-sub);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: #b91c1c;
+            color: #ffffff;
+            border-color: #ef4444;
+        }
+
+        main {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .protocol-view {
+            display: none;
+        }
+
+        .protocol-view.active {
+            display: block;
+        }
+
+        .step-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .step-number {
+            background: var(--red-alert);
+            color: #ffffff;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .step-desc {
+            color: var(--text-main);
+            font-size: 0.95rem;
+            line-height: 1.45;
+            margin-bottom: 12px;
+        }
+
+        .danger-box {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--red-alert);
+            padding: 10px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.85rem;
+            color: #fca5a5;
+            margin-top: 8px;
+        }
+
+        .svg-container {
+            width: 100%;
+            background: #090d16;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        svg {
+            max-width: 100%;
+            height: 140px;
+        }
+
+        /* METRÓNOMO RCP */
+        .metronome-box {
+            background: #111827;
+            border: 2px solid var(--red-alert);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .pulse-light {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #450a0a;
+            margin: 0 auto 12px auto;
+            border: 2px solid #ef4444;
+            transition: background 0.05s ease;
+        }
+
+        .pulse-active {
+            background: #ef4444 !important;
+            box-shadow: 0 0 16px #ef4444;
+        }
+
+        .metronome-btn {
+            background: var(--red-alert);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        footer {
+            padding: 12px;
+            background: var(--surface-color);
+            border-top: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><span>🚨</span> Kora Primeros Auxilios</h1>
+        <div class="offline-badge">100% Offline</div>
+    </header>
+
+    <nav>
+        <button class="tab-btn active" onclick="cambiarVista('heimlich')">1. Asfixia (OVACE)</button>
+        <button class="tab-btn" onclick="cambiarVista('rcp')">2. Paro / RCP</button>
+    </nav>
+
+    <main>
+        <!-- PROTOCOLO 1: ASFIXIA / HEIMLICH -->
+        <section id="heimlich" class="protocol-view active">
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Reconocer Signos de Asfixia</div>
+                </div>
+                <div class="svg-container">
+                    <svg viewBox="0 0 160 140" fill="none">
+                        <circle cx="80" cy="40" r="24" stroke="#94a3b8" stroke-width="3" fill="#1e293b"/>
+                        <path d="M50 130 C50 85 110 85 110 130" stroke="#94a3b8" stroke-width="4"/>
+                        <!-- Manos al cuello -->
+                        <path d="M60 55 Q80 65 95 55" stroke="#ef4444" stroke-width="6" stroke-linecap="round"/>
+                        <circle cx="80" cy="58" r="4" fill="#ef4444"/>
+                    </svg>
+                </div>
+                <p class="step-desc">La víctima se lleva las manos al cuello, no puede toser fuertemente, ni respirar, ni hablar.</p>
+                <div class="danger-box"><strong>ALERTA:</strong> Si tose con fuerza, NO golpees la espalda. Anímala a seguir tosiendo.</div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Posición de Rescate y Puño</div>
+                </div>
+                <div class="svg-container">
+                    <svg viewBox="0 0 160 140" fill="none">
+                        <!-- Perfil Rescatador abrazando a victima -->
+                        <path d="M55 45 Q70 45 75 75 T65 130" stroke="#38bdf8" stroke-width="4"/>
+                        <circle cx="55" cy="25" r="16" stroke="#38bdf8" stroke-width="3"/>
+                        <path d="M95 50 Q110 50 115 80 T105 130" stroke="#94a3b8" stroke-width="4"/>
+                        <circle cx="95" cy="30" r="16" stroke="#94a3b8" stroke-width="3"/>
+                        <!-- Punto de presion navel -->
+                        <circle cx="90" cy="85" r="6" fill="#ef4444"/>
+                        <path d="M90 95 L90 75" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                        <polyline points="85,82 90,75 95,82" stroke="#ef4444" stroke-width="3"/>
+                    </svg>
+                </div>
+                <p class="step-desc">Párate detrás de la persona. Pon un pie adelante entre sus piernas para equilibrio. Cierra un puño 2 dedos arriba del ombligo y cúbrelo con tu otra mano.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Compresiones Hacia Adentro y Arriba</div>
+                </div>
+                <p class="step-desc">Aplica tirones secos y rápidos simulando una letra "J" (hacia ti y hacia arriba al mismo tiempo). Repite hasta expulsar el objeto o hasta que caiga inconsciente.</p>
+                <div class="danger-box"><strong>SI PIERDE EL CONOCIMIENTO:</strong> Tiéndela en el piso boca arriba e inicia inmediatamente maniobras de RCP.</div>
+            </div>
+        </section>
+
+        <!-- PROTOCOLO 2: RCP Y METRÓNOMO -->
+        <section id="rcp" class="protocol-view">
+            <div class="metronome-box">
+                <div id="pulseLight" class="pulse-light"></div>
+                <button id="btnMetro" class="metronome-btn" onclick="toggleMetronomo()">INICIAR METRÓNOMO RCP (110 BPM)</button>
+                <div style="color: #94a3b8; font-size: 0.8rem; margin-top: 8px;">Mantén las compresiones al compás de cada golpe</div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Posición de las Manos</div>
+                </div>
+                <div class="svg-container">
+                    <svg viewBox="0 0 160 140" fill="none">
+                        <!-- Torso y Manos entrelazadas en esternon -->
+                        <rect x="30" y="20" width="100" height="100" rx="20" stroke="#94a3b8" stroke-width="3" fill="#1e293b"/>
+                        <line x1="80" y1="20" x2="80" y2="120" stroke="#334155" stroke-width="2" stroke-dasharray="4"/>
+                        <circle cx="80" cy="75" r="14" fill="#ef4444" opacity="0.8"/>
+                        <!-- Flecha profundidad -->
+                        <path d="M80 60 L80 90" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+                        <polyline points="75,85 80,90 85,85" stroke="#ffffff" stroke-width="3"/>
+                    </svg>
+                </div>
+                <p class="step-desc">Coloca el talón de una mano en el centro exacto del pecho (mitad inferior del esternón). Entrelaza la otra mano encima. Mantén los brazos rectos sin flexionar codos.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Profundidad y Ritmo</div>
+                </div>
+                <p class="step-desc">Comprime fuerte y rápido: hunde el tórax <strong>5 a 6 cm</strong>. Permite que el pecho regrese por completo después de cada compresión sin despegar tus manos.</p>
+                <div class="danger-box"><strong>REGLA DE VIDA:</strong> Solo Manos (Hands-Only). Si no eres personal de salud capacitado, no des ventilaciones boca a boca; no pares de comprimir hasta que llegue auxilio.</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Kora Health Initiative • Sin Anuncios • Licencia Libre MIT
+    </footer>
+
+    <script>
+        // Pestañas
+        function cambiarVista(id) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.protocol-view').forEach(view => view.classList.remove('active'));
+            
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Metrónomo Web Audio API (Cero dependencias)
+        let audioCtx = null;
+        let metroInterval = null;
+        let isRunning = false;
+
+        function playBeep() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, audioCtx.currentTime); // Tono claro y agudo
+            gain.gain.setValueAtTime(0.7, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.08);
+
+            // Vibración háptica nativa en Android
+            if (navigator.vibrate) {
+                navigator.vibrate(40);
+            }
+
+            // Pulso visual
+            const light = document.getElementById('pulseLight');
+            light.classList.add('pulse-active');
+            setTimeout(() => light.classList.remove('pulse-active'), 80);
+        }
+
+        function toggleMetronomo() {
+            const btn = document.getElementById('btnMetro');
+            if (isRunning) {
+                clearInterval(metroInterval);
+                isRunning = false;
+                btn.textContent = "INICIAR METRÓNOMO RCP (110 BPM)";
+                btn.style.background = "#ef4444";
+            } else {
+                playBeep();
+                // 110 BPM = 60000ms / 110 = ~545ms
+                metroInterval = setInterval(playBeep, 545);
+                isRunning = true;
+                btn.textContent = "DETENER METRÓNOMO";
+                btn.style.background = "#334155";
+            }
+        }
+
+        // Persistencia Kora Admin DB (si corre dentro del Hub)
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof window.KoraDB !== "undefined") {
+                try {
+                    const ddl = `
+                        CREATE TABLE IF NOT EXISTS mod_salud_protocolos (
+                            id TEXT PRIMARY KEY,
+                            categoria TEXT NOT NULL,
+                            titulo TEXT NOT NULL,
+                            descripcion TEXT NOT NULL
+                        );
+                    `;
+                    window.KoraDB.registerModule(
+                        "org.koradevs.salud.primerosauxilios",
+                        "Kora Primeros Auxilios",
+                        1,
+                        ddl
+                    );
+                } catch(e) {
+                    console.log("[KoraDB Health Init]:", e);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
